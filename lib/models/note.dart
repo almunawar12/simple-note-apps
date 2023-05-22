@@ -1,23 +1,20 @@
-class Note {
-  int id;
-  String title;
-  String description;
-  DateTime createdAt;
+import 'package:hive/hive.dart';
 
-  Note (
-    this.id,
-    this.title,
-    this.description,
-    this.createdAt,
-  );
+part 'note.g.dart';
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'createdAt': createdAt.toString(),
-    };
-  }
+@HiveType(typeId: 0)
+class Note extends HiveObject {
+  @HiveField(0)
+  late final String title;
+  @HiveField(1)
+  late final String desc;
+  @HiveField(2)
+  late final DateTime createAt;
 
+  Note({
+    required this.title,
+    required this.desc,
+    required this.createAt,
+
+  });
 }

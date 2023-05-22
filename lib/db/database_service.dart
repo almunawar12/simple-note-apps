@@ -1,35 +1,28 @@
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import '../models/note.dart';
 
 class DatabaseService {
-  DatabaseService._();
+  static const boxName = "note";
 
-
-  static final db = DatabaseService._();
-
-  static Database? _database;
-
-  // Getter database
-  Future<Database?> get database async {
-    if(_database != null) {
-      return _database;
-    }
-    _database = await initDB();
-      return _database;
+  Future<dynamic> addNote(Note note) async{
+    final box = await Hive.openBox(boxName);
+    await box.add(note);
   }
 
-  initDB() async {
-    return await openDatabase(
-      join(await getDatabasesPath(), 'notes.db'),
-      version: 1,
-      onCreate: (db, version)  async {
-        db.execute('''
-          CREATE TABLE notes(id INTEGER PRIMARY KEY AUTOINCREMENT,
-          title TEXT,
-          description TEXT,
-          createdAt DATE)
-          ''');
-      },
-    );
+  Future<dynamic> editNote(Note note) async{
+    final box = await Hive.openBox(boxName);
+    await box.put(note.key, note);
+  }
+
+  Future<List<Note>> getNote() async{
+    final box = await Hive.openBox(boxName);
+    return box.values.toList().cast<Note>();
+
+  }
+
+  Future<void> deleteNote(Note note) async {
+    final box = await Hive.openBox(boxName);
+    box.delete(note.key);
   }
 }

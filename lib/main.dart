@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:simple_notes/models/note.dart';
 import 'package:simple_notes/utils/app_routes.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+import 'db/database_service.dart';
+
+void main() async{
+  await Hive.initFlutter();
+  Hive.registerAdapter(NoteAdapter());
+  await Hive.openBox(DatabaseService.boxName);
   runApp(const MyApp());
 }
 

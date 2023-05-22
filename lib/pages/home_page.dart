@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:simple_notes/db/database_service.dart';
+import 'package:simple_notes/extension/my_date.dart';
+
+import '../models/note.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,27 +26,48 @@ class _HomePageState extends State<HomePage> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Column(
-          children: const [
-            NoteCard(),
-            NoteCard(),
-            NoteCard(),
-            NoteCard(),
-            NoteCard(),
-            NoteCard(),
-            NoteCard(),
-            NoteCard(),
-            NoteCard(),
-            NoteCard(),
-            NoteCard(),
-          ],
-          ),
+      body: ValueListenableBuilder(
+        valueListenable: Hive.box(DatabaseService.boxName).listenable(),
+        builder: (context, value, _) {
+          if(value.isEmpty){
+            return const Center(
+              child: Text("Tidak ada data"),
+            );
+          } else {
+            return ListView.separated(
+              itemBuilder: (context, index) {
+                Note tempNote = value.getAt(index);
+                return  Dismissible(
+                  key: Key(value.values.toList()[index].key.toString()),
+                  child: NoteCard(
+                    note: tempNote,
+                    ),
+                    onDismissed: (_) async {
+                      await DatabaseService().deleteNote(tempNote);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Data Telah dihapus")
+                          )
+                      );
+                    },
+                );
+              }, 
+              separatorBuilder: (context, index) {
+                return  const SizedBox(
+                  height: 8,
+                );
+              }, 
+              itemCount: value.length,
+              );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          GoRouter.of(context).pushNamed('add-note');
+          GoRouter.of(context).pushNamed('add-note').then((value) {
+            setState(() {
+            });
+          });
         },
         child: const Icon(Icons.note_add),
         ),
@@ -52,15 +78,18 @@ class _HomePageState extends State<HomePage> {
 class NoteCard extends StatelessWidget {
   const NoteCard({
     super.key,
+    required this.note,
   });
+
+  final Note note;
 
   @override
   Widget build(BuildContext context) {
-    return  const Card(
+    return   Card(
       child: ListTile(
-        title: Text('Ini Judul'),
-        subtitle: Text('Ini Deskripsi'),
-        trailing: Text('Dibuat pada \n 02-03-2023', 
+        title: Text(note.title),
+        subtitle: Text(note.desc),
+        trailing: Text('Dibuat pada \n ${note.createAt.formatDate()}', 
         textAlign: TextAlign.center,
         ),
       ),
