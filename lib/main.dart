@@ -4,7 +4,6 @@ import 'package:simple_notes/utils/app_routes.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'db/database_service.dart';
-
 void main() async{
   await Hive.initFlutter();
   Hive.registerAdapter(NoteAdapter());
@@ -24,9 +23,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-    routeInformationParser: AppRoutes().goRouter.routeInformationParser,
-    routeInformationProvider: AppRoutes().goRouter.routeInformationProvider,
-    routerDelegate: AppRoutes().goRouter.routerDelegate,
+    routeInformationParser: AppRoutes.goRouter.routeInformationParser,
+    routeInformationProvider: AppRoutes.goRouter.routeInformationProvider,
+    routerDelegate: AppRoutes.goRouter.routerDelegate,
     );
   }
 }

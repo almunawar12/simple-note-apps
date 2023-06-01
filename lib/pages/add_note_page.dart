@@ -4,7 +4,9 @@ import 'package:simple_notes/db/database_service.dart';
 import 'package:simple_notes/models/note.dart';
 
 class AddNotePage extends StatefulWidget {
-  const AddNotePage({super.key});
+  const AddNotePage({super.key, this.note});
+
+  final Note? note;
 
   @override
   State<AddNotePage> createState() => _AddNotePageState();
@@ -22,6 +24,11 @@ class _AddNotePageState extends State<AddNotePage> {
   void initState() {
     _tittleController = TextEditingController();
     _descController = TextEditingController();
+
+    if(widget.note != null) {
+      _tittleController.text = widget.note!.title;
+      _descController.text = widget.note!.desc;
+    }
     super.initState();
   }
 
@@ -35,7 +42,11 @@ class _AddNotePageState extends State<AddNotePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text(
+          widget.note!= null? "Edit Note" : "Add Note",
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Form(
@@ -98,9 +109,15 @@ class _AddNotePageState extends State<AddNotePage> {
               desc: _descController.text, 
               createAt: DateTime.now(),
               );
-            await dbService.addNote(tempNote).then((value) {
-              GoRouter.of(context).pop();
-            });
+              if(widget.note != null) {
+                dbService.editNote(widget.note!.key,tempNote).then((value) {
+                  GoRouter.of(context).pop();
+                });
+              } else {
+                dbService.addNote(tempNote).then((value) {
+                  GoRouter.of(context).pop();
+                });  
+              }
           }
         }, 
         label: const Text('Simpan'),

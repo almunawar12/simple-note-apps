@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:simple_notes/db/database_service.dart';
 import 'package:simple_notes/extension/my_date.dart';
+import 'package:simple_notes/utils/app_routes.dart';
 
 import '../models/note.dart';
 
@@ -19,7 +20,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Simple Apps',
+          'Simple Note Apps',
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text("Data Telah dihapus")
-                          )
+                          ),
                       );
                     },
                 );
@@ -87,10 +88,26 @@ class NoteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return   Card(
       child: ListTile(
-        title: Text(note.title),
-        subtitle: Text(note.desc),
-        trailing: Text('Dibuat pada \n ${note.createAt.formatDate()}', 
-        textAlign: TextAlign.center,
+        onTap: () {
+          GoRouter.of(context).pushNamed(
+            AppRoutes.editNote,
+            extra: note
+          );
+        },
+        title: Text(
+          note.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          ),
+        subtitle: Text(
+          note.desc,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          ),
+        trailing: Text(
+          'Dibuat pada \n ${note.createAt.formatDate()
+          }', 
+        textAlign: TextAlign.start,
         ),
       ),
     );

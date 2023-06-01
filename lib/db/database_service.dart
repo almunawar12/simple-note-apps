@@ -10,9 +10,9 @@ class DatabaseService {
     await box.add(note);
   }
 
-  Future<dynamic> editNote(Note note) async{
+  Future<dynamic> editNote(int key, Note note) async{
     final box = await Hive.openBox(boxName);
-    await box.put(note.key, note);
+    await box.put(key, note);
   }
 
   Future<List<Note>> getNote() async{
